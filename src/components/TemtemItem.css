@@ -22,7 +22,11 @@
 }
 
 .temtem-app-dark .temtem:hover .divider {
-    background-color: #111;
+    background-color: #666;
+}
+
+.temtem-app-dark .temtem:hover .temtem-image-container {
+    border-color: #666;
 }
 
 .temtem-app-dark .temtem {
