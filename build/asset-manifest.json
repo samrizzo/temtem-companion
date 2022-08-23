@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/temtem-app/static/css/main.d5e4df24.css",
-    "main.js": "/temtem-app/static/js/main.95d0fc45.js",
-    "index.html": "/temtem-app/index.html",
-    "main.d5e4df24.css.map": "/temtem-app/static/css/main.d5e4df24.css.map",
-    "main.95d0fc45.js.map": "/temtem-app/static/js/main.95d0fc45.js.map"
+    "main.css": "/temtem-companion/static/css/main.d5e4df24.css",
+    "main.js": "/temtem-companion/static/js/main.95d0fc45.js",
+    "index.html": "/temtem-companion/index.html",
+    "main.d5e4df24.css.map": "/temtem-companion/static/css/main.d5e4df24.css.map",
+    "main.95d0fc45.js.map": "/temtem-companion/static/js/main.95d0fc45.js.map"
   },
   "entrypoints": [
     "static/css/main.d5e4df24.css",
