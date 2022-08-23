@@ -1,6 +1,4 @@
 body {
-    background-color: #000;
-    color: #fff;
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -11,6 +9,39 @@ select:focus {
 
 .temtem-app h1 {
     font-size: 1.7rem;
+}
+
+.temtem-app-dark {
+    background-color: #111;
+    color: #fff;
+}
+
+.temtem-app-dark .temtem-app-theme-container select,
+.temtem-app-dark .temtem-search-container input,
+.temtem-app-dark .temtem-search-container select {
+    background-color: #111;
+    color: #fff;
+}
+
+.temtem-app-light .temtem-app-theme-container select,
+.temtem-app-light .temtem-search-container input,
+.temtem-app-light .temtem-search-container select {
+    background-color: #fff;
+    color: #000;
+}
+
+.temtem-app-light {
+    background-color: #fff;
+    color: #000;
+}
+
+.temtem-app-theme-container {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.temtem-app-theme-container select {
+    padding: .5rem .25rem;
 }
 
 .temtem-container {
@@ -33,14 +64,17 @@ select:focus {
     color: #aaa;
 }
 
+.temtem-app-theme-container select,
 .temtem-search-container input,
 .temtem-search-container select {
-    background-color: #111;
     border: 1px solid #666;
     border-radius: 3px;
-    color: #fff;
     display: block;
     margin: 0.5rem 1rem 0.25rem 0;
+}
+
+.temtem-search-container input,
+.temtem-search-container select {
     padding: .75rem 0.5rem;
 }
 

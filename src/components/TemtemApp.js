@@ -6,10 +6,11 @@ class TemtemApp extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { temtemData: [], filteredData: [], temtemTypes: [], type: 'ALL', search: '' };
+    this.state = { temtemData: [], filteredData: [], temtemTypes: [], type: 'ALL', search: '', theme: 'Light' };
 
     this.filterByType = this.filterByType.bind(this);
     this.searchTemtem = this.searchTemtem.bind(this);
+    this.setTheme = this.setTheme.bind(this);
   }
 
   componentDidMount = () => {
@@ -63,10 +64,34 @@ class TemtemApp extends React.Component {
     this.setState({ search: searchTerm });
   }
 
+  setTheme(event) {
+    let selectedTheme = event.target.value;
+    let body = document.getElementsByTagName('body')[0];
+
+    if (selectedTheme === 'Dark') {
+      body.classList.remove('temtem-app-light');
+      body.classList.add('temtem-app-dark');
+    }
+    else {
+      body.classList.remove('temtem-app-dark');
+      body.classList.add('temtem-app-light');
+    }
+
+    console.log(selectedTheme);
+    this.setState({ theme: selectedTheme });
+  }
+
   render() {
     return (
       <main className='temtem-app'>
         <h1>Temtem Companion</h1>
+        <section className='temtem-app-theme-container'>
+          <label>Theme</label>
+          <select onChange={this.setTheme} value={this.state.theme}>
+            <option key='light'>Light</option>
+            <option key='dark'>Dark</option>
+          </select>
+        </section>
         <section className='temtem-search-container'>
           <label>Search by Temtem name</label>
           <input type='text' placeholder='Search for a temtem' onChange={this.searchTemtem} value={this.state.search}/>

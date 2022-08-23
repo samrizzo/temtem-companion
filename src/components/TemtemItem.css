@@ -1,12 +1,10 @@
 .divider {
-    background-color: #fff;
     height: 1px;
     margin-top: 1rem;
     width: 100%;
 }
 
 .temtem {
-    background-color: #111;
     border: 1px solid #aaa;
     border-radius: 5px;
     margin: 0.5rem 1rem 0.5rem 0;
@@ -14,14 +12,40 @@
     padding: 0.25rem 0 1rem 0;
 }
 
-.temtem:hover {
-    background-color: #333;
+.temtem:hover .temtem-image {
+    background-color: #ccc;
+}
+
+.temtem-app-dark .temtem:hover {
+    background-color: #aaa;
+    color: #000;
+}
+
+.temtem-app-dark .temtem:hover .divider {
+    background-color: #111;
+}
+
+.temtem-app-dark .temtem {
+    background-color: #111;
+}
+
+.temtem-app-dark .divider,
+.temtem-app-light .temtem {
+    background-color: #fff;
+}
+
+.temtem-app-light .temtem:hover {
+    background-color: #222;
     border-color: #fff;
     color: #fff;
 }
 
-.temtem:hover .temtem-image {
-    background-color: #ddd;
+.temtem-app-light .divider {
+    background-color: #aaa;
+}
+
+.temtem-app-light .temtem:hover .divider {
+    background-color: #fff;
 }
 
 .temtem-attributes {
