@@ -80,6 +80,7 @@ class TemtemApp extends React.Component {
         </section>
         <section className='temtem-container'>
           {this.state.filteredData.map(temtemData => <TemtemItem temtem={temtemData} temtemTypes={this.state.temtemTypes}/>)}
+          <p>{this.state.filteredData.length === 0 ? "No results found..." : ""}</p>
         </section>
       </main>
     );
