@@ -5,19 +5,22 @@ class TemtemItem extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { temtemWeaknesses: [], temtemId: 0 };
+
+    this.formatTemtemNumber = this.formatTemtemNumber.bind(this);
     this.getTypeIcon = this.getTypeIcon.bind(this);
     this.setWeaknesses = this.setWeaknesses.bind(this);
   }
 
   componentDidMount() {
-    let temtemNumber = this.props.temtem.number >= 100 ?
+    //this.setWeaknesses();
+  }
+
+  formatTemtemNumber() {
+    return this.props.temtem.number >= 100 ?
           this.props.temtem.number :
           this.props.temtem.number >= 10 ?
             `0${this.props.temtem.number}` :
             `00${this.props.temtem.number}`;
-    this.setState({ temtemId: temtemNumber });
-    this.setWeaknesses();
   }
 
   setWeaknesses() {
@@ -31,10 +34,7 @@ class TemtemItem extends React.Component {
     }
 
     let weaknessesArray = objectArray.filter(weakness => weakness.value >= 2);
-
-    weaknessesArray !== null ? 
-        this.setState({ temtemWeaknesses: weaknessesArray }) : 
-        this.setState({ temtemWeaknesses: [], temtemId: 0 });
+    return weaknessesArray;
   }
 
   getTypeIcon(typeName) {
@@ -48,6 +48,10 @@ class TemtemItem extends React.Component {
   } 
 
   render() {
+
+    let temtemNumber = this.formatTemtemNumber();
+    let weaknessesArray = this.setWeaknesses();
+
     return (
       <section className='temtem'>
         <section className='temtem-image-container'>
@@ -55,7 +59,7 @@ class TemtemItem extends React.Component {
         </section>
         <section className='temtem-attributes'>
             <section className='temtem-name-container'>
-                <p>#{this.state.temtemId}</p>
+                <p>#{temtemNumber}</p>
                 <p>{this.props.temtem.name}</p>
             </section>
             <section className='temtem-type-container'>
@@ -66,8 +70,8 @@ class TemtemItem extends React.Component {
             <section className='temtem-weaknesses-container'>
                 <p>Weaknesses</p>
                 <section className='temtem-weaknesses'>
-                  {this.state.temtemWeaknesses.map(type => <img className='temtem-type' src={this.getTypeIcon(type.key)} title={type.key} alt={type.key}/>)}
-                  <p>({this.state.temtemWeaknesses.map(type => <span>{type.key}</span>)})</p>
+                  {weaknessesArray.map(type => <img className='temtem-type' src={this.getTypeIcon(type.key)} title={type.key} alt={type.key}/>)}
+                  <p>({weaknessesArray.map(type => <span>{type.key}</span>)})</p>
                 </section>
             </section>
         </section>

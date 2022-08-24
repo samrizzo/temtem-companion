@@ -17,7 +17,8 @@ class TemtemApp extends React.Component {
     fetch('https://temtem-api.mael.tech/api/temtems?fields=number,name,types,portraitWikiUrl&weaknesses=true')
       .then(response => response.json())
       .then(data => {
-        this.setState({ temtemData: data, filteredData: data });
+        let sortedData = data.sort((a,b)=> (a.number > b.number ? 1 : -1));
+        this.setState({ temtemData: sortedData, filteredData: sortedData });
       });
     fetch('https://temtem-api.mael.tech/api/types')
       .then(response => response.json())
@@ -77,7 +78,6 @@ class TemtemApp extends React.Component {
       body.classList.add('temtem-app-light');
     }
 
-    console.log(selectedTheme);
     this.setState({ theme: selectedTheme });
   }
 
