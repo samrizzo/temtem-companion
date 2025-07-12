@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/temtem-companion/static/css/main.1c35ce72.css",
+    "main.js": "/temtem-companion/static/js/main.205f06ce.js",
+    "index.html": "/temtem-companion/index.html",
+    "main.1c35ce72.css.map": "/temtem-companion/static/css/main.1c35ce72.css.map",
+    "main.205f06ce.js.map": "/temtem-companion/static/js/main.205f06ce.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1c35ce72.css",
+    "static/js/main.205f06ce.js"
+  ]
+}
