@@ -139,7 +139,7 @@
 
 /* Battle Matchups */
 .temtem-matchups {
-  padding: 3rem;
+  padding: 0 3rem;
 }
 
 .temtem-matchups-title {
@@ -230,6 +230,8 @@
   border-color: rgba(78, 205, 196, 0.6);
 }
 
+
+
 .temtem-matchup-immune {
   background: rgba(148, 163, 184, 0.2);
   border: 1px solid rgba(148, 163, 184, 0.4);
@@ -250,35 +252,169 @@
   font-weight: 500;
 }
 
-/* Battle Tips */
-.temtem-battle-tips {
+/* Evolution Styles - Simplified, moved after battle matchups */
+.temtem-evolution {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 2rem;
   border-radius: 16px;
-  margin: 2rem 3rem 3rem;
+  padding: 2rem;
+  margin: 2rem 3rem 1.5rem;
   backdrop-filter: blur(10px);
 }
 
-.temtem-battle-tip {
+.temtem-evolution-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.temtem-evolution-title::before {
+  content: "🔄";
+  font-size: 1.5rem;
+}
+
+.temtem-evolution-none {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.temtem-evolution-chain {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
+  overflow-x: auto;
+  padding: 1rem 0;
   margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.temtem-evolution-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.temtem-evolution-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-width: 10rem;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.temtem-evolution-card.current {
+  border-color: #4ecdc4;
+  background: rgba(78, 205, 196, 0.1);
+  box-shadow: 0 8px 24px rgba(78, 205, 196, 0.2);
+}
+
+.temtem-evolution-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.temtem-evolution-image-container {
+  position: relative;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.temtem-evolution-image {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.25rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.temtem-evolution-image-error {
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.temtem-evolution-number {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.temtem-evolution-name {
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  letter-spacing: -0.02em;
+}
+
+.temtem-evolution-stage {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.5rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
 }
 
-.temtem-battle-tip:last-child {
-  margin-bottom: 0;
+.temtem-evolution-requirements {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
-.temtem-battle-tip-icon {
+.temtem-evolution-current-indicator {
+  position: absolute;
+  top: -0.25rem;
+  right: -0.25rem;
+  background: #4ecdc4;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.temtem-evolution-arrow {
+  color: rgba(255, 255, 255, 0.4);
   font-size: 1.25rem;
-  color: #4ecdc4;
+  font-weight: 700;
+  margin: 0 0.25rem;
 }
 
 /* Responsive Design */
@@ -303,6 +439,10 @@
   .temtem-matchup-section {
     padding: 1.5rem;
   }
+
+  .temtem-matchup-section.temtem-resistances {
+    margin-bottom: 0;
+  }
   
   .temtem-matchup-types {
     grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
@@ -312,6 +452,47 @@
   .temtem-battle-tips {
     margin: 1.5rem 1.5rem 2rem;
     padding: 1.5rem;
+  }
+  
+  .temtem-evolution {
+    margin: 0 1.5rem 1.5rem ;
+    padding: 1.5rem;
+  }
+  
+  .temtem-evolution-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .temtem-evolution-chain {
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    margin-bottom: 0.75rem;
+  }
+  
+  .temtem-evolution-wrapper {
+    gap: 0.75rem;
+  }
+  
+  .temtem-evolution-card {
+    min-width: 8rem;
+    padding: 1rem;
+  }
+  
+  .temtem-evolution-image {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  
+  .temtem-evolution-image-error {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.25rem;
+  }
+  
+  .temtem-evolution-arrow {
+    font-size: 1rem;
+    margin: 0 0.125rem;
   }
 }
 
@@ -344,5 +525,70 @@
   .temtem-battle-tips {
     margin: 1rem;
     padding: 1rem;
+  }
+  
+  .temtem-evolution {
+    margin: 0 1rem;
+    padding: 1rem;
+  }
+  
+  .temtem-evolution-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .temtem-evolution-chain {
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+  
+  .temtem-evolution-wrapper {
+    gap: 0.5rem;
+  }
+  
+  .temtem-evolution-card {
+    min-width: 6.5rem;
+    padding: 0.75rem;
+  }
+  
+  .temtem-evolution-image {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .temtem-evolution-image-error {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+  
+  .temtem-evolution-number {
+    font-size: 0.625rem;
+  }
+  
+  .temtem-evolution-name {
+    font-size: 0.75rem;
+  }
+  
+  .temtem-evolution-stage {
+    font-size: 0.625rem;
+  }
+  
+  .temtem-evolution-requirements {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.25rem;
+  }
+  
+  .temtem-evolution-current-indicator {
+    font-size: 0.625rem;
+    padding: 0.0625rem 0.25rem;
+  }
+  
+  .temtem-evolution-arrow {
+    font-size: 0.875rem;
+    margin: 0;
   }
 }

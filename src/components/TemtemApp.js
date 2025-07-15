@@ -11,6 +11,7 @@ const TemtemApp = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [evolutionLoading, setEvolutionLoading] = useState(false); // Add evolution loading state
 
   // Fetch data on component mount
   useEffect(() => {
@@ -18,7 +19,7 @@ const TemtemApp = () => {
       try {
         setLoading(true);
         const [temtemsResponse, typesResponse] = await Promise.all([
-          fetch('https://temtem-api.mael.tech/api/temtems?fields=number,name,types,portraitWikiUrl&weaknesses=true'),
+          fetch('https://temtem-api.mael.tech/api/temtems?fields=number,name,types,portraitWikiUrl,evolution&weaknesses=true'),
           fetch('https://temtem-api.mael.tech/api/types')
         ]);
 
@@ -114,6 +115,30 @@ const TemtemApp = () => {
 
   const handleBackToSearch = () => {
     setSelectedTemtem(null);
+  };
+
+  // Fixed handler for evolution selection
+  const handleEvolutionSelect = (temtemNumber) => {
+    console.log('Evolution selected:', temtemNumber);
+    
+    // Prevent rapid clicking
+    if (evolutionLoading) return;
+    
+    setEvolutionLoading(true);
+    
+    // Use setTimeout to ensure state update happens after current render
+    setTimeout(() => {
+      const evolutionTemtem = temtemData.find(temtem => temtem.number === temtemNumber);
+      
+      if (evolutionTemtem) {
+        console.log('Found evolution Temtem:', evolutionTemtem);
+        setSelectedTemtem(evolutionTemtem);
+      } else {
+        console.error('Evolution Temtem not found:', temtemNumber);
+      }
+      
+      setEvolutionLoading(false);
+    }, 100); // Small delay to ensure smooth transition
   };
 
   const hasActiveFilters = searchTerm || selectedTypes.length > 0;
@@ -317,6 +342,8 @@ const TemtemApp = () => {
               temtem={selectedTemtem} 
               temtemTypes={temtemTypes}
               isDetailView={true}
+              onEvolutionSelect={handleEvolutionSelect}
+              evolutionLoading={evolutionLoading}
             />
           </section>
         )}

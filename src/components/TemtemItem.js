@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import './TemtemItem.css';
 
-const TemtemItem = ({ temtem, temtemTypes, isDetailView = false }) => {
+const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSelect, evolutionLoading = false }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
@@ -41,6 +41,118 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false }) => {
   const handleImageError = () => {
     setImageError(true);
     setImageLoading(false);
+  };
+
+  const getEvolutionRequirements = (evolutionData) => {
+    const requirements = [];
+    
+    if (evolutionData.levels) {
+      requirements.push(`Level ${evolutionData.levels}`);
+    }
+    
+    if (evolutionData.trading) {
+      requirements.push('Trading');
+    }
+    
+    if (evolutionData.item) {
+      requirements.push(`Item: ${evolutionData.item}`);
+    }
+    
+    return requirements.length > 0 ? requirements.join(', ') : 'Base form';
+  };
+
+  // Debounced evolution click handler
+  const handleEvolutionClick = useCallback((evolution) => {
+    // Prevent rapid clicking
+    if (evolutionLoading) return;
+    
+    console.log('Evolution clicked:', evolution);
+    console.log('Current temtem number:', temtem.number);
+    
+    if (evolution.number !== temtem.number && onEvolutionSelect) {
+      console.log('Calling onEvolutionSelect with:', evolution.number);
+      onEvolutionSelect(evolution.number);
+    }
+  }, [temtem.number, onEvolutionSelect, evolutionLoading]);
+
+  const renderEvolutionChain = () => {
+    if (!temtem.evolution || !temtem.evolution.evolves) {
+      return (
+        <div className="temtem-evolution">
+          <h2 className="temtem-evolution-title">Evolution</h2>
+          <p className="temtem-evolution-none">This Temtem does not evolve</p>
+        </div>
+      );
+    }
+
+    const { evolutionTree, stage } = temtem.evolution;
+    const currentTemtem = evolutionTree.find(evo => evo.stage === stage);
+
+    return (
+      <div className="temtem-evolution">
+        <h2 className="temtem-evolution-title">Evolution Chain</h2>
+        {evolutionLoading && (
+          <div className="evolution-loading">
+            <div className="loading-spinner-small"></div>
+            <span>Loading evolution...</span>
+          </div>
+        )}
+        <div className="temtem-evolution-chain">
+          {evolutionTree.map((evolution, index) => {
+            const isCurrent = evolution.stage === stage;
+            const isClickable = !isCurrent && onEvolutionSelect && !evolutionLoading;
+            const temtemImageUrl = `/temtem-companion/TemtemSprites/${formatTemtemNumber(evolution.number)}.png`;
+            
+            return (
+              <div key={evolution.number} className="temtem-evolution-wrapper">
+                <div 
+                  className={`temtem-evolution-card ${isCurrent ? 'current' : ''} ${isClickable ? 'clickable' : ''} ${evolutionLoading ? 'loading' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleEvolutionClick(evolution);
+                  }}
+                  style={{ 
+                    cursor: isClickable ? 'pointer' : 'default',
+                    opacity: evolutionLoading ? 0.6 : 1
+                  }}
+                >
+                  <div className="temtem-evolution-image-container">
+                    <img
+                      src={temtemImageUrl}
+                      alt={evolution.name}
+                      className="temtem-evolution-image"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'block';
+                      }}
+                    />
+                    <div className="temtem-evolution-image-error" style={{ display: 'none' }}>
+                      <span>🔍</span>
+                    </div>
+                  </div>
+                  <div className="temtem-evolution-info">
+                    <div className="temtem-evolution-number">#{formatTemtemNumber(evolution.number)}</div>
+                    <div className="temtem-evolution-name">{evolution.name}</div>
+                    <div className="temtem-evolution-stage">Stage {evolution.stage}</div>
+                    <div className="temtem-evolution-requirements">
+                      {getEvolutionRequirements(evolution)}
+                    </div>
+                    {isCurrent && <div className="temtem-evolution-current-indicator">Current</div>}
+                  </div>
+                </div>
+                
+                {index < evolutionTree.length - 1 && (
+                  <div className="temtem-evolution-arrow">
+                    <span>→</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   const temtemNumber = formatTemtemNumber(temtem.number);
@@ -167,16 +279,9 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false }) => {
           )}
         </div>
 
-        {/* Battle Tips */}
-        <div className="temtem-battle-tips">
-          <div className="temtem-battle-tip">
-            <span className="tip-icon">💡</span>
-            <p>
-              Use attacks that are <strong className="text-weakness">weak to</strong> for maximum damage, 
-              avoid attacks that are <strong className="text-resistance">resistant to</strong>
-            </p>
-          </div>
-        </div>
+        {/* Evolution Chain */}
+        {renderEvolutionChain()}
+
       </div>
     );
   }
