@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import './TemtemItem.css';
 
 const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSelect, evolutionLoading = false }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
+  const [evolutionImageErrors, setEvolutionImageErrors] = useState({});
 
   const formatTemtemNumber = (number) => {
     return number.toString().padStart(3, '0');
@@ -34,13 +34,21 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSele
     return matchups;
   };
 
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
+  // Reset error states when temtem changes
+  useEffect(() => {
+    setImageError(false);
+    setEvolutionImageErrors({});
+  }, [temtem.number]);
 
   const handleImageError = () => {
     setImageError(true);
-    setImageLoading(false);
+  };
+
+  const handleEvolutionImageError = (evolutionNumber) => {
+    setEvolutionImageErrors(prev => ({
+      ...prev,
+      [evolutionNumber]: true
+    }));
   };
 
   const getEvolutionRequirements = (evolutionData) => {
@@ -86,22 +94,16 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSele
     }
 
     const { evolutionTree, stage } = temtem.evolution;
-    const currentTemtem = evolutionTree.find(evo => evo.stage === stage);
 
     return (
       <div className="temtem-evolution">
         <h2 className="temtem-evolution-title">Evolution Chain</h2>
-        {evolutionLoading && (
-          <div className="evolution-loading">
-            <div className="loading-spinner-small"></div>
-            <span>Loading evolution...</span>
-          </div>
-        )}
         <div className="temtem-evolution-chain">
           {evolutionTree.map((evolution, index) => {
             const isCurrent = evolution.stage === stage;
             const isClickable = !isCurrent && onEvolutionSelect && !evolutionLoading;
             const temtemImageUrl = `/temtem-companion/TemtemSprites/${formatTemtemNumber(evolution.number)}.png`;
+            const hasImageError = evolutionImageErrors[evolution.number];
             
             return (
               <div key={evolution.number} className="temtem-evolution-wrapper">
@@ -118,19 +120,27 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSele
                   }}
                 >
                   <div className="temtem-evolution-image-container">
-                    <img
-                      src={temtemImageUrl}
-                      alt={evolution.name}
-                      className="temtem-evolution-image"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'block';
-                      }}
-                    />
-                    <div className="temtem-evolution-image-error" style={{ display: 'none' }}>
-                      <span>🔍</span>
-                    </div>
+                    {!hasImageError ? (
+                      <img
+                        src={temtemImageUrl}
+                        alt={evolution.name}
+                        className="temtem-evolution-image loaded"
+                        onError={() => handleEvolutionImageError(evolution.number)}
+                        style={{ 
+                          opacity: '1 !important',
+                          visibility: 'visible !important',
+                          display: 'block !important',
+                          transition: 'none !important',
+                          transform: 'none !important'
+                        }}
+                      />
+                    ) : (
+                      <div className="temtem-evolution-image-error">
+                        <span>🔍</span>
+                      </div>
+                    )}
                   </div>
+                  
                   <div className="temtem-evolution-info">
                     <div className="temtem-evolution-number">#{formatTemtemNumber(evolution.number)}</div>
                     <div className="temtem-evolution-name">{evolution.name}</div>
@@ -166,17 +176,11 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSele
         {/* Header */}
         <div className="temtem-detail-header">
           <div className="temtem-detail-sprite-container">
-            {imageLoading && (
-              <div className="temtem-detail-image-loading">
-                <div className="loading-spinner-small"></div>
-              </div>
-            )}
             {!imageError ? (
               <img
-                className={`temtem-detail-sprite ${imageLoading ? 'loading' : ''}`}
+                className="temtem-detail-sprite"
                 src={temtemImageUrl}
                 alt={temtem.name}
-                onLoad={handleImageLoad}
                 onError={handleImageError}
               />
             ) : (
@@ -290,17 +294,11 @@ const TemtemItem = ({ temtem, temtemTypes, isDetailView = false, onEvolutionSele
   return (
     <section className="temtem">
       <section className="temtem-image-container">
-        {imageLoading && (
-          <div className="temtem-image-loading">
-            <div className="loading-spinner-small"></div>
-          </div>
-        )}
         {!imageError ? (
           <img
-            className={`temtem-image ${imageLoading ? 'loading' : ''}`}
+            className="temtem-image"
             src={temtemImageUrl}
             alt={temtem.name}
-            onLoad={handleImageLoad}
             onError={handleImageError}
           />
         ) : (

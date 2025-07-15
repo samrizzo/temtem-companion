@@ -257,8 +257,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: 2rem;
-  margin: 2rem 3rem 1.5rem;
+  margin: 2rem 3rem;
   backdrop-filter: blur(10px);
 }
 
@@ -590,5 +589,110 @@
   .temtem-evolution-arrow {
     font-size: 0.875rem;
     margin: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .temtem-detail-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .temtem-detail-sprite-container {
+    width: 6rem;
+    height: 6rem;
+  }
+  
+  .temtem-detail-name {
+    font-size: 1.75rem;
+  }
+  
+  .temtem-matchups {
+    padding: 1.5rem 1rem;
+  }
+  
+  .temtem-matchup-section {
+    padding: 1rem;
+  }
+  
+  .temtem-matchup-types {
+    grid-template-columns: 1fr;
+  }
+  
+  .temtem-battle-tips {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .temtem-evolution {
+    margin: 0 1rem 2rem 1rem;
+    padding: 1rem;
+  }
+  
+  .temtem-evolution-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .temtem-evolution-chain {
+    gap: 1rem; /* Increased gap for better spacing */
+    padding: 1rem 0;
+    margin-bottom: 0.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .temtem-evolution-wrapper {
+    gap: 0.75rem; /* Slightly increased gap */
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .temtem-evolution-card {
+    min-width: 10rem; /* Increased for better mobile display */
+    max-width: 14rem; /* Increased max width */
+    width: 100%;
+    padding: 1.25rem; /* Slightly more padding */
+  }
+  
+  /* FIXED: Larger images for better mobile visibility */
+  .temtem-evolution-image {
+    width: 5rem; /* Increased from 3rem to 5rem (80px) */
+    height: 5rem;
+  }
+  
+  .temtem-evolution-image-error {
+    width: 5rem; /* Increased from 3rem to 5rem */
+    height: 5rem;
+    font-size: 1.25rem; /* Slightly larger error text */
+  }
+  
+  .temtem-evolution-number {
+    font-size: 0.75rem; /* Slightly larger */
+  }
+  
+  .temtem-evolution-name {
+    font-size: 0.875rem; /* Slightly larger */
+  }
+  
+  .temtem-evolution-stage {
+    font-size: 0.75rem; /* Slightly larger */
+  }
+  
+  .temtem-evolution-requirements {
+    font-size: 0.75rem; /* Slightly larger */
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .temtem-evolution-current-indicator {
+    font-size: 0.75rem; /* Slightly larger */
+    padding: 0.125rem 0.375rem;
+  }
+  
+  .temtem-evolution-arrow {
+    font-size: 1.5rem; /* Slightly larger arrow */
+    margin: 0.25rem 0;
+    transform: rotate(90deg);
+    color: rgba(255, 255, 255, 0.6);
   }
 }

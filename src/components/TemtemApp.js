@@ -11,7 +11,63 @@ const TemtemApp = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [evolutionLoading, setEvolutionLoading] = useState(false); // Add evolution loading state
+  const [evolutionLoading, setEvolutionLoading] = useState(false);
+  const [imageCache, setImageCache] = useState(new Map()); // Cache for preloaded images
+  const [preloadProgress, setPreloadProgress] = useState(0);
+
+  // Helper function to format Temtem number
+  const formatTemtemNumber = (number) => {
+    return number.toString().padStart(3, '0');
+  };
+
+  // Helper function to get sprite URL
+  const getTemtemSpriteUrl = (number) => {
+    const formattedNumber = formatTemtemNumber(number);
+    return `/temtem-companion/TemtemSprites/${formattedNumber}.png`;
+  };
+
+  // Helper function to get type icon
+  const getTypeIcon = (typeName) => {
+    const typeData = temtemTypes.find(type => type.name === typeName);
+    return typeData ? `https://temtem-api.mael.tech/${typeData.icon}` : '';
+  };
+
+  // Image preloading function
+  const preloadImage = (url) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve({ url, loaded: true });
+      img.onerror = () => resolve({ url, loaded: false }); // Don't reject, just mark as failed
+      img.src = url;
+    });
+  };
+
+  // Preload critical images in batches
+  const preloadImages = async (temtems) => {
+    const imageUrls = temtems.map(temtem => getTemtemSpriteUrl(temtem.number));
+    const batchSize = 20; // Load 20 images at a time
+    const cache = new Map();
+    let loaded = 0;
+
+    for (let i = 0; i < imageUrls.length; i += batchSize) {
+      const batch = imageUrls.slice(i, i + batchSize);
+      const promises = batch.map(url => preloadImage(url));
+      
+      const results = await Promise.allSettled(promises);
+      
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          const { url, loaded } = result.value;
+          cache.set(url, loaded);
+          loaded++;
+          setPreloadProgress((loaded / imageUrls.length) * 100);
+        }
+      });
+    }
+
+    setImageCache(cache);
+    return cache;
+  };
 
   // Fetch data on component mount
   useEffect(() => {
@@ -30,11 +86,26 @@ const TemtemApp = () => {
         const temtemsData = await temtemsResponse.json();
         const typesData = await typesResponse.json();
 
-        setTemtemData(temtemsData.sort((a, b) => a.number - b.number));
-        setTemtemTypes(typesData.sort((a, b) => a.name.localeCompare(b.name)));
+        const sortedTemtems = temtemsData.sort((a, b) => a.number - b.number);
+        const sortedTypes = typesData.sort((a, b) => a.name.localeCompare(b.name));
+
+        setTemtemData(sortedTemtems);
+        setTemtemTypes(sortedTypes);
+
+        // Start preloading images for the first 50 Temtem (most commonly accessed)
+        const priorityTemtems = sortedTemtems.slice(0, 50);
+        preloadImages(priorityTemtems);
+
+        setLoading(false);
+
+        // Continue preloading the rest in the background
+        setTimeout(() => {
+          const remainingTemtems = sortedTemtems.slice(50);
+          preloadImages(remainingTemtems);
+        }, 1000);
+
       } catch (err) {
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
@@ -72,23 +143,6 @@ const TemtemApp = () => {
     return results;
   }, [temtemData, searchTerm, selectedTypes]);
 
-  // Helper function to format Temtem number
-  const formatTemtemNumber = (number) => {
-    return number.toString().padStart(3, '0');
-  };
-
-  // Helper function to get sprite URL
-  const getTemtemSpriteUrl = (number) => {
-    const formattedNumber = formatTemtemNumber(number);
-    return `/temtem-companion/TemtemSprites/${formattedNumber}.png`;
-  };
-
-  // Helper function to get type icon
-  const getTypeIcon = (typeName) => {
-    const typeData = temtemTypes.find(type => type.name === typeName);
-    return typeData ? `https://temtem-api.mael.tech/${typeData.icon}` : '';
-  };
-
   const clearSearch = () => {
     setSearchTerm('');
     setSelectedTemtem(null);
@@ -111,6 +165,18 @@ const TemtemApp = () => {
 
   const handleTemtemSelect = (temtem) => {
     setSelectedTemtem(temtem);
+    
+    // Preload evolution images when a Temtem is selected
+    if (temtem.evolution && temtem.evolution.evolves && temtem.evolution.evolutionTree) {
+      const evolutionUrls = temtem.evolution.evolutionTree.map(evo => getTemtemSpriteUrl(evo.number));
+      evolutionUrls.forEach(url => {
+        if (!imageCache.has(url)) {
+          preloadImage(url).then(result => {
+            setImageCache(prev => new Map(prev).set(result.url, result.loaded));
+          });
+        }
+      });
+    }
   };
 
   const handleBackToSearch = () => {
@@ -149,6 +215,17 @@ const TemtemApp = () => {
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading Temtem data...</p>
+          {preloadProgress > 0 && preloadProgress < 100 && (
+            <div className="preload-progress">
+              <div className="preload-bar">
+                <div 
+                  className="preload-fill" 
+                  style={{ width: `${preloadProgress}%` }}
+                ></div>
+              </div>
+              <p>Preloading images... {Math.round(preloadProgress)}%</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -275,47 +352,62 @@ const TemtemApp = () => {
             
             {filteredResults.length > 0 ? (
               <div className="temtem-grid">
-                {filteredResults.map(temtem => (
-                  <button
-                    key={temtem.number}
-                    onClick={() => handleTemtemSelect(temtem)}
-                    className="temtem-grid-item"
-                  >
-                    <div className="temtem-grid-sprite">
-                      <img
-                        src={getTemtemSpriteUrl(temtem.number)}
-                        alt={temtem.name}
-                        className="temtem-sprite"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                      <div className="temtem-sprite-fallback" style={{ display: 'none' }}>
-                        <span className="temtem-sprite-placeholder">#{formatTemtemNumber(temtem.number)}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="temtem-grid-info">
-                      <div className="temtem-grid-number">
-                        #{formatTemtemNumber(temtem.number)}
-                      </div>
-                      <h3 className="temtem-grid-name">{temtem.name}</h3>
-                      <div className="temtem-grid-types">
-                        {temtem.types.map(type => (
-                          <div key={type} className="temtem-grid-type">
+                {filteredResults.map(temtem => {
+                  const spriteUrl = getTemtemSpriteUrl(temtem.number);
+                  const imagePreloaded = imageCache.has(spriteUrl);
+                  
+                  return (
+                    <button
+                      key={temtem.number}
+                      onClick={() => handleTemtemSelect(temtem)}
+                      className="temtem-grid-item"
+                    >
+                      <div className="temtem-grid-sprite">
+                        {imagePreloaded && imageCache.get(spriteUrl) ? (
+                          <img
+                            src={spriteUrl}
+                            alt={temtem.name}
+                            className="temtem-sprite preloaded"
+                          />
+                        ) : (
+                          <>
                             <img
-                              src={getTypeIcon(type)}
-                              alt={type}
-                              className="temtem-grid-type-icon"
+                              src={spriteUrl}
+                              alt={temtem.name}
+                              className="temtem-sprite"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
                             />
-                            <span className="temtem-grid-type-name">{type}</span>
-                          </div>
-                        ))}
+                            <div className="temtem-sprite-fallback" style={{ display: 'none' }}>
+                              <span className="temtem-sprite-placeholder">#{formatTemtemNumber(temtem.number)}</span>
+                            </div>
+                          </>
+                        )}
                       </div>
-                    </div>
-                  </button>
-                ))}
+                      
+                      <div className="temtem-grid-info">
+                        <div className="temtem-grid-number">
+                          #{formatTemtemNumber(temtem.number)}
+                        </div>
+                        <h3 className="temtem-grid-name">{temtem.name}</h3>
+                        <div className="temtem-grid-types">
+                          {temtem.types.map(type => (
+                            <div key={type} className="temtem-grid-type">
+                              <img
+                                src={getTypeIcon(type)}
+                                alt={type}
+                                className="temtem-grid-type-icon"
+                              />
+                              <span className="temtem-grid-type-name">{type}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             ) : (
               <section className="temtem-no-results">
@@ -344,6 +436,7 @@ const TemtemApp = () => {
               isDetailView={true}
               onEvolutionSelect={handleEvolutionSelect}
               evolutionLoading={evolutionLoading}
+              imageCache={imageCache} // Pass the image cache
             />
           </section>
         )}
